@@ -1,50 +1,116 @@
 'use strict';
 
-// arguments object - no longer bound with arrow functions
+console.log('App.js is running!');
 
-var add = function add(a, b) {
-    // console.log(arguments);
-    return a + b;
+// Challenge 2:
+// Create app object title/subtitle
+// use title/subtitle in the template
+// render template
+
+
+// Challenge 3:
+// only render the subtitle (and p tag) if subtitle exists - logical and operator
+// render new p tag - if options.length > 0 => "Here are your options" else "no options"
+
+var app = {
+    title: 'Indecision App',
+    subtitle: 'Put your life into the hands of a computer',
+    options: []
 };
-console.log(add(55, 1, 1001));
 
-// this keyword - no longer bound
-var user = {
-    name: 'Samuel',
-    cities: ['San Jose', 'Ann Arbor', 'Kalamazoo'],
-    printPlacesLived: function printPlacesLived() {
-        var _this = this;
+var onFormSubmit = function onFormSubmit(e) {
+    e.preventDefault();
 
-        return this.cities.map(function (city) {
-            return _this.name + ' has lived in ' + city + '.';
-        });
+    var option = e.target.elements.option.value;
 
-        // const cityMessages = this.cities.map((city) =>   {
-        //     return this.name + ' has lived in ' + city + '.';
-        // });
+    if (option) {
+        app.options.push(option);
+        e.target.elements.option.value = "";
 
-        // cityMessages.forEach((city) => {
-        //     console.log(city);
-        // });
-    }
-};
-console.log(user.printPlacesLived());
-
-// Challenge
-// numbers - array of numbers
-// multiply By - single number
-// multiply - return a new array where the numbers have been multiplied
-
-var multiplier = {
-    multiplyBy: 3,
-    numbers: [10, 20, 30],
-    multiply: function multiply() {
-        var _this2 = this;
-
-        return this.numbers.map(function (number) {
-            return _this2.multiplyBy * number;
-        });
+        renderTemplate();
     }
 };
 
-console.log(multiplier.multiply());
+// Create "Remove All" button above list
+// on click -> wipe the array -> rerender
+var onRemoveAll = function onRemoveAll() {
+    app.options = [];
+    renderTemplate();
+};
+
+var onMakeDecision = function onMakeDecision() {
+    var randomNum = Math.floor(Math.random() * app.options.length);
+    var option = app.options[randomNum];
+
+    alert(option);
+};
+
+var appRoot = document.getElementById('app');
+
+var numbers = [55, 101, 1000];
+
+// Create a render function that renders new JSX
+// Call it right away
+// Call it after options array is added
+
+var renderTemplate = function renderTemplate() {
+    // JSX - JavaScript XML
+    var template = React.createElement(
+        'div',
+        null,
+        React.createElement(
+            'h1',
+            null,
+            app.title
+        ),
+        app.subtitle && React.createElement(
+            'p',
+            null,
+            ' ',
+            app.subtitle,
+            ' '
+        ),
+        React.createElement(
+            'p',
+            null,
+            ' ',
+            app.options.length > 0 ? 'Here are your options' : 'No options',
+            ' '
+        ),
+        React.createElement(
+            'button',
+            { disabled: app.options.length === 0, onClick: onMakeDecision },
+            'What should I do?'
+        ),
+        React.createElement(
+            'button',
+            { onClick: onRemoveAll },
+            'Remove All'
+        ),
+        React.createElement(
+            'ol',
+            null,
+            app.options.map(function (option) {
+                return React.createElement(
+                    'li',
+                    { key: option },
+                    option
+                );
+            })
+        ),
+        React.createElement(
+            'form',
+            { onSubmit: onFormSubmit },
+            React.createElement('input', { type: 'text', name: 'option' }),
+            React.createElement(
+                'button',
+                null,
+                'Add Option'
+            )
+        )
+    );
+
+    ReactDOM.render(template, appRoot);
+};
+
+renderTemplate();
